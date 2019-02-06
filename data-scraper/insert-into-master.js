@@ -19,6 +19,8 @@ const items = {
         "Zone:": "zone"
     },
     "license_type": {
+        "CIDER PRODUCER/WHOLESALER":"CD",
+        "BREWER RETAIL":"BR",
         "CABARET LIQUOR": "CR",
         "CATERING ESTABLISHMENT": "CT",
         "CLUB BEER": "CB",
@@ -60,8 +62,10 @@ const items = {
         "A": "GROCERY STORE BEER",
         "AX": "GROCERY BEER, WINE PROD",
         "BC": "WHOLESALE CIDER",
+        "BR": "BREWER RETAIL",
         "C": "WHOLESALE BEER(C)",
         "CB": "CLUB BEER",
+        "CD": "CIDER PRODUCER/WHOLESALER",
         "CL": "CLUB LIQUOR",
         "CO": "WHOLESALE BEER(CO)",
         "CR": "CABARET LIQUOR",

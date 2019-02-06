@@ -14,7 +14,7 @@ module.exports = class Logger {
         if (!error && response.statusCode == 200) {
           resolve();
         } else {
-          console.log(response.statusCode);
+          console.log(error);
         }
       });
     });

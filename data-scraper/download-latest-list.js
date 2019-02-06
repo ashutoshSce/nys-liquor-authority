@@ -1,5 +1,5 @@
 /* Command: node download-latest-list.js NEW 1 */
-
+const fs = require('fs');
 require('dotenv').config();
 const puppeteer = require('puppeteer');
 const {
@@ -16,11 +16,12 @@ const dropCollection = process.argv[3];
   const logger = new LoggerModule();
 
   process.on('unhandledRejection', (err) => {
-    logger.sendMessageToSlack('Caught exception: ' + err.toString());
-    spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/download-latest-list.js', 'NEW', '1'], {
-      detached: true
+    logger.sendMessageToSlack('Caught exception: ' + err.toString()).then(() => {
+      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/download-latest-list.js', 'NEW', '1'], {
+        detached: true
+      });
+      process.exit();
     });
-    setInterval(() => process.exit(1), 1000);
   });
 
   let message = 'Start Running, getting records for country ' + countryName;
@@ -41,8 +42,9 @@ const dropCollection = process.argv[3];
   if (dropCollection !== undefined) {
     if (definedObjects.country[countryName] === undefined) {
       let message = 'New Country Name:' + countryName;
-      logger.sendMessageToSlack(message);
-      setInterval(() => process.exit(1), 1000);
+      logger.sendMessageToSlack(message).then(() => {
+        process.exit();
+      });
     }
     await mongo.destroyObject('licenseInfo', {
       country: definedObjects.country[countryName],
@@ -66,6 +68,10 @@ const dropCollection = process.argv[3];
   const textContent = await page.content();
   await browser.close();
 
+  fs.writeFile('download.txt', textContent, function (err, data) {
+    if (err) console.log(err);
+  });
+
   const contentsArr = textContent.split('\n');
   const contentsArrLength = contentsArr.length;
 
@@ -73,10 +79,20 @@ const dropCollection = process.argv[3];
     if (contentsArr[index].match(/(^$)|(<html>)|(#County)/g)) {
       continue;
     }
+    if (index === contentsArrLength - 1) {
+      contentsArr[index] = contentsArr[index].replace(/(<\/pre>)|(<\/body>)|(<\/html>)/g, '');
+    }
+
     const rowText = contentsArr[index].split('\t');
+    if (rowText[2] === undefined) {
+      logger.sendMessageToSlack('Undefined License Type ' + contentsArr[index]);
+      continue;
+    }
 
     if (definedObjects.r_license_type[rowText[2].trim()] === undefined) {
-      logger.sendMessageToSlack('https://www.tran.sla.ny.gov/servlet/ApplicationServlet?pageName=com.ibm.nysla.data.publicquery.PublicQuerySuccessfulResultsPage&validated=true&serialNumber=' + rowText[0] + '&licenseType=' + rowText[2].trim());
+      logger.sendMessageToSlack('New License Type added: https://www.tran.sla.ny.gov/servlet/ApplicationServlet?pageName=com.ibm.nysla.data.publicquery.PublicQuerySuccessfulResultsPage&validated=true&serialNumber=' + rowText[0] + '&licenseType=' + rowText[2].trim()).then(() => {
+        process.exit();
+      });
     }
 
     await mongo.writeObject('licensePage', {
@@ -88,10 +104,10 @@ const dropCollection = process.argv[3];
   }
 
   await mongo.disconnectToDb();
-  logger.sendMessageToSlack('Finished Scraping, ' + contentsArrLength + ' records found for country ' + definedObjects.country[countryName]);
-
-  spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
-    detached: true
+  logger.sendMessageToSlack('Finished Scraping, ' + contentsArrLength + ' records found for country ' + definedObjects.country[countryName]).then(() => {
+    spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+      detached: true
+    });
+    process.exit();
   });
-  setInterval(() => process.exit(1), 1000);
 })();

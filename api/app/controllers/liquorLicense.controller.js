@@ -1,8 +1,10 @@
 const {
   to
 } = require('await-to-js');
+const fs = require('fs');
 const util = require('util');
 const hdate = require('human-date');
+const Json2csvParser = require('json2csv').Parser;
 
 const logger = require('../logger');
 const config = require('../../config');
@@ -10,9 +12,14 @@ const liquorLicense = require('../models/liquorLicense.model');
 const liquorLicenseMaster = require('../models/liquorLicenseMaster.model');
 
 const get = async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
+  if (req.query.exportExcel !== undefined && req.query.exportExcel == 1) {
+    res.status(200).json(req.url);
+    return;
+  }
+
   let sort = {},
     where = {},
+    csvHeaderFields = [],
     filterMap = {},
     intervalMap = {},
     skip = 0,
@@ -54,6 +61,7 @@ const get = async (req, res) => {
   req.query.columns.forEach((column) => {
     const detail = JSON.parse(column);
     if (keysList.includes(detail.name)) {
+      csvHeaderFields.push(detail.name);
       select[detail.name] = 1;
 
       if (detail.meta.sort !== null) {
@@ -72,10 +80,10 @@ const get = async (req, res) => {
           $gte: '',
           $lte: ''
         };
-        
+
         if (intervalMap[detail.name].min !== undefined && intervalMap[detail.name].min !== null) {
           let value = intervalMap[detail.name].min;
-          if(detail.meta.date){
+          if (detail.meta.date) {
             value = new Date(intervalMap[detail.name].min.split('-').reverse().join('-'))
           }
           where[detail.name].$gte = value;
@@ -86,7 +94,7 @@ const get = async (req, res) => {
 
         if (intervalMap[detail.name].max !== undefined && intervalMap[detail.name].max !== null) {
           let value = intervalMap[detail.name].max;
-          if(detail.meta.date){
+          if (detail.meta.date) {
             value = new Date(intervalMap[detail.name].max.split('-').reverse().join('-'))
           }
           where[detail.name].$lte = value;
@@ -101,9 +109,14 @@ const get = async (req, res) => {
       }
     }
   });
-  
-  [err, count] = await to(liquorLicense.countDocuments());
-  [err, filtered] = await to(liquorLicense.countDocuments(where));
+
+  if (req.query.exportExcel === undefined) {
+    [err, count] = await to(liquorLicense.countDocuments());
+    [err, filtered] = await to(liquorLicense.countDocuments(where));
+  } else {
+    skip = 0;
+    limit = 0;
+  }
   [err, liquorLicenseList] = await to(liquorLicense.find(where).select(select).sort(sort).skip(skip).limit(limit).lean());
   for (let index = 0; index < liquorLicenseList.length; index++) {
     liquorLicenseList[index]['dtRowId'] = liquorLicenseList[index].serial_number;
@@ -124,16 +137,34 @@ const get = async (req, res) => {
       liquorLicenseList[index].license_status = licenseMaster.license_status[liquorLicenseList[index].license_status];
     }
 
-    liquorLicenseList[index].serial_number = `<a href="${liquorLicenseList[index].link}" target="_blank">${liquorLicenseList[index].serial_number}</a>`;
+    if (req.query.exportExcel === undefined) {
+      liquorLicenseList[index].serial_number = `<a href="${liquorLicenseList[index].link}" target="_blank">${liquorLicenseList[index].serial_number}</a>`;
+    }
   }
 
-  res.status(200).json({
-    data: liquorLicenseList,
-    filtered,
-    count,
-    filters: count !== filtered,
-    fullRecordInfo: true
-  });
+  if (req.query.exportExcel !== undefined) {
+    const json2csvParser = new Json2csvParser({
+      csvHeaderFields
+    });
+    const csv = json2csvParser.parse(liquorLicenseList);
+    let path = './logs/' + Date.now() + '.csv';
+    fs.writeFile(path, csv, function (err, data) {
+      if (err) {
+        throw err;
+      } else {
+        res.download(path);
+      }
+    });
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
+      data: liquorLicenseList,
+      filtered,
+      count,
+      filters: count !== filtered,
+      fullRecordInfo: true
+    });
+  }
 };
 
 module.exports.get = get;

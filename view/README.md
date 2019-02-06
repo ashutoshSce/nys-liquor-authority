@@ -1,6 +1,6 @@
 # nys-liquor-authority/view
 
-## See Live Demo http://www.ashutoshjhs.me/nys-liquor
+## See Live Demo http://nys-liquor.ashutoshjha.me/
 
 I have taken help from  [Laravel Enso Vuejs Datatable](https://github.com/laravel-enso/VueDatatable) to create vuejs datatable.
 

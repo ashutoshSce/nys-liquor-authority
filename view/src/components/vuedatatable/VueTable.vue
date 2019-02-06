@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="table-wrapper"
-    v-if="initialised"
-  >
+  <div class="table-wrapper" v-if="initialised">
     <top-controls
       :template="template"
       :i18n="i18n"
@@ -18,15 +15,8 @@
       v-on="$listeners"
       v-model="search"
     />
-    <div
-      class="table-responsive"
-      v-responsive
-    >
-      <table
-        class="table is-fullwidth is-marginless"
-        :class="template.style"
-        id="id"
-      >
+    <div class="table-responsive" v-responsive>
+      <table class="table is-fullwidth is-marginless" :class="template.style" id="id">
         <table-header
           :template="template"
           :i18n="i18n"
@@ -60,9 +50,7 @@
               :column="column"
               :row="row"
               :loading="loading"
-            >
-              {{ row[column.name] }}
-            </slot>
+            >{{ row[column.name] }}</slot>
           </template>
         </table-body>
         <table-footer
@@ -81,13 +69,11 @@
               :name="`${visibleColumns[i].name}_custom_total`"
               :total="body ? body.total : []"
               :column="visibleColumns[i]"
-            >
-              {{ `${visibleColumns[i].name}_custom_total` }}
-            </slot>
+            >{{ `${visibleColumns[i].name}_custom_total` }}</slot>
           </template>
         </table-footer>
       </table>
-      <overlay v-if="loading" />
+      <overlay v-if="loading"/>
     </div>
     <bottom-controls
       class="bottom-controls"
@@ -103,9 +89,7 @@
     <div
       class="has-text-centered no-records-found"
       v-if="isEmpty"
-    >
-      {{ i18n('No records were found') }}
-    </div>
+    >{{ i18n('No records were found') }}</div>
   </div>
 </template>
 
@@ -445,7 +429,12 @@ export default {
       axios[this.template.method.toLowerCase()](
         path,
         this.exportRequest(),
-      ).catch((error) => {
+      ).then((data) => {
+         let params = data.data.split('exportExcel=1');
+         if(params[1] !== undefined){
+            window.open((path+params[1]).replace('exportExcel=1', 'exportExcel=2'));
+         }
+        }).catch((error) => {
         const { status, data } = error.response;
 
         if (status === 555) {

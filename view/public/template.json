@@ -8,7 +8,7 @@
 				"event": "export-excel",
 				"action": "export",
 				"label": "Excel",
-				"path": "\/api\/system\/permissions\/exportExcel?"
+				"path": "\/api\/v1\/liquor-license?exportExcel=1"
 			}],
 			"row": [{
 				"icon": "pencil-alt",

@@ -11,9 +11,9 @@ const LoggerModule = require('./logger');
 
 const limit = 1000;
 
-function swap(json){
+function swap(json) {
   var ret = {};
-  for(var key in json){
+  for (var key in json) {
     ret[json[key]] = key;
   }
   return ret;
@@ -29,8 +29,9 @@ async function parseItems(logger, items, definedObjects, index) {
       if (definedObjects.license_type[items['license_type'].replace(/\./g, ' ')] === undefined) {
         console.log(items['license_type'].replace(/\./g, ' '));
         let message = 'Index:' + index + ' New License Type:' + items['license_type'] + ' Link:' + items['link'];
-        logger.sendMessageToSlack(message);
-        setInterval(() => process.exit(1), 1000);
+        logger.sendMessageToSlack(message).then(() => {
+          process.exit()
+        });
       }
       items['license_type'] = definedObjects.license_type[items['license_type']];
     }
@@ -38,12 +39,13 @@ async function parseItems(logger, items, definedObjects, index) {
     if (items['license_status'] !== undefined) {
       items['license_status'] = items['license_status'].trim();
       const licenseStatusMaster = swap(definedObjects.license_status);
-      if(licenseStatusMaster[items['license_status']] !== undefined){
+      if (licenseStatusMaster[items['license_status']] !== undefined) {
         items['license_status'] = licenseStatusMaster[items['license_status']];
       } else {
         let message = 'Index:' + index + ' New License Status:' + items['license_status'] + ' Link:' + items['link'];
-        logger.sendMessageToSlack(message);
-        setInterval(() => process.exit(1), 1000);
+        logger.sendMessageToSlack(message).then(() => {
+          process.exit()
+        });
       }
     }
 
@@ -104,11 +106,12 @@ async function parseItems(logger, items, definedObjects, index) {
   const logger = new LoggerModule();
 
   process.on('unhandledRejection', (err) => {
-    logger.sendMessageToSlack('Caught exception: ' + err.toString());
-    spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
-      detached: true
+    logger.sendMessageToSlack('Caught exception: ' + err.toString()), then(() => {
+      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+        detached: true
+      });
+      process.exit();
     });
-    setInterval(() => process.exit(1), 1000);
   });
 
   logger.sendMessageToSlack('Start Running, limiting records by ' + limit);
@@ -215,10 +218,11 @@ async function parseItems(logger, items, definedObjects, index) {
   if (licensePageList.length === 0) {
     logger.sendMessageToSlack('Finished Scraping, zero record found.');
   } else {
-    logger.sendMessageToSlack('Finished Scraping, reached to limit ' + limit);
-    spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
-      detached: true
+    logger.sendMessageToSlack('Finished Scraping, reached to limit ' + limit).then(() => {
+      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+        detached: true
+      });
+      process.exit();
     });
-    setInterval(() => process.exit(1), 1000);
   }
 })();
