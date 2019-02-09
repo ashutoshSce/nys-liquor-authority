@@ -1,6 +1,8 @@
 /* Command: node license-info.js */
 
-require('dotenv').config();
+require('dotenv').config({
+  path: __dirname + '/.env'
+});
 const puppeteer = require('puppeteer');
 const {
   spawn
@@ -26,8 +28,7 @@ async function parseItems(logger, items, definedObjects, index) {
 
     if (items['license_type'] !== undefined) {
       items['license_type'] = items['license_type'].trim();
-      if (definedObjects.license_type[items['license_type'].replace(/\./g, ' ')] === undefined) {
-        console.log(items['license_type'].replace(/\./g, ' '));
+      if (definedObjects.license_type[items['license_type']] === undefined) {
         let message = 'Index:' + index + ' New License Type:' + items['license_type'] + ' Link:' + items['link'];
         logger.sendMessageToSlack(message).then(() => {
           process.exit()
@@ -105,35 +106,39 @@ async function parseItems(logger, items, definedObjects, index) {
 (async () => {
   const logger = new LoggerModule();
 
-  process.on('unhandledRejection', (err) => {
-    logger.sendMessageToSlack('Caught exception: ' + err.toString()), then(() => {
-      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
-        detached: true
-      });
-      process.exit();
-    });
-  });
+  // process.on('unhandledRejection', (err) => {
+  //   logger.sendMessageToSlack('Caught exception: ' + err.toString()), then(() => {
+  //     spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+  //       detached: true
+  //     });
+  //     process.exit();
+  //   });
+  // });
 
   logger.sendMessageToSlack('Start Running, limiting records by ' + limit);
+  const mongo = new MongoModule();
+  await mongo.connectToDb();
+  const definedObjects = await mongo.readObject('licenseMaster');
+  if (definedObjects === null) {
+    logger.sendMessageToSlack('Forgot to run insert-into-master.js file. Plz run `node insert-into-master.js`').then(process.exit());
+    return;
+  }
+
+  definedObjects.license_type = swap(definedObjects.license_type);
+  const licensePageList = await mongo.readObjectByJoin('licensePage', 0, limit);
+
   const browser = await puppeteer.launch({
     headless: true,
     ignoreHTTPSErrors: true
   });
   const page = await browser.newPage();
-  const mongo = new MongoModule();
-  await mongo.connectToDb();
-  const definedObjects = await mongo.readObject('licenseMaster');
-  const licensePageList = await mongo.readObjectByJoin('licensePage', 0, limit);
-
   for (let i = 0; i < licensePageList.length; i++) {
     const serialNumber = licensePageList[i].serial_number;
     const licenseType = licensePageList[i].license_type;
     const pageUrl = 'https://www.tran.sla.ny.gov/servlet/ApplicationServlet?pageName=com.ibm.nysla.data.publicquery.PublicQuerySuccessfulResultsPage&validated=true&serialNumber=' + serialNumber + '&licenseType=' + licenseType;
-    try {
-      await page.goto(pageUrl);
-    } catch (exc) {
-      logger.sendMessageToSlack('Index:' + i + ' ' + pageUrl + ' unable to load');
-    }
+    await page.goto(pageUrl, {
+      waitUntil: 'networkidle2'
+    });
 
     let items = await page.evaluate((definedObjects) => {
       var items = {};
@@ -197,6 +202,9 @@ async function parseItems(logger, items, definedObjects, index) {
     items['link'] = pageUrl;
     items = await parseItems(logger, items, definedObjects, i);
     if (items['license_type'] === undefined) {
+      await mongo.destroyObject('licensePage', {
+        serial_number: items.serial_number
+      });
       continue;
     }
 
@@ -212,6 +220,7 @@ async function parseItems(logger, items, definedObjects, index) {
       await mongo.updateObject('licenseInfo', items, queryObj);
   }
 
+  await page.close();
   await browser.close();
   await mongo.disconnectToDb();
 

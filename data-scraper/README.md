@@ -33,4 +33,4 @@ node download-latest-list.js NEW 1
 ```
 
 Note: Here ```NEW``` will tell scraper to download only New York data, you may add different region code.
-kindly refer original website [New York State Liquor Authority](https://www.tran.sla.ny.gov/JSP/query/PublicQueryAdvanceSearchPage.jsp) Choose a country dropdown section.
+kindly refer original website [New York State Liquor Authority](https://www.tran.sla.ny.gov/JSP/query/PublicQueryAdvanceSearchPage.jsp) Choose a county dropdown section.

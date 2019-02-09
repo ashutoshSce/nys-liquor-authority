@@ -91,6 +91,22 @@ module.exports = class Mongo {
     });
   }
 
+  writeUnOrderedBulkObject(collectionName, objList) {
+    return new Promise((resolve, reject) => {
+      const col = this.db.collection(collectionName);
+      const batch = col.initializeUnorderedBulkOp();
+
+      for (var i = 0; i < objList.length; ++i) {
+        batch.insert(objList[i]);
+      }
+      
+      batch.execute((err, result) => {
+        if (err) throw err;
+        resolve();
+      });
+    });
+  }
+
   updateObject(collectionName, obj, query) {
     return new Promise((resolve, reject) => {
       obj['updatedAt'] = new Date();

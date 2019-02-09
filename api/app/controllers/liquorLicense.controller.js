@@ -31,6 +31,7 @@ const get = async (req, res) => {
     liquorLicenseList, licenseMaster, err, count, filtered;
   [err, licenseMaster] = await to(liquorLicenseMaster.findOne().lean());
 
+
   const keysList = Object.keys(liquorLicense.schema.paths);
 
   // calculations of skip and limit
@@ -120,7 +121,7 @@ const get = async (req, res) => {
   [err, liquorLicenseList] = await to(liquorLicense.find(where).select(select).sort(sort).skip(skip).limit(limit).lean());
   for (let index = 0; index < liquorLicenseList.length; index++) {
     liquorLicenseList[index]['dtRowId'] = liquorLicenseList[index].serial_number;
-    liquorLicenseList[index].license_type = licenseMaster.r_license_type[liquorLicenseList[index].license_type];
+    liquorLicenseList[index].license_type = licenseMaster.license_type[liquorLicenseList[index].license_type];
     if (liquorLicenseList[index].filing_date !== undefined) {
       liquorLicenseList[index].filing_date = hdate.prettyPrint(liquorLicenseList[index].filing_date);
     }

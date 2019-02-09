@@ -15,7 +15,7 @@ const LiquorLicenseSchema = mongoose.Schema({
   zone: Number,
   address: String,
   zip: String,
-  country: String,
+  county: String,
   link: String
 });
 

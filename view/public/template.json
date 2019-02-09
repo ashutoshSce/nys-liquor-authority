@@ -309,9 +309,9 @@
 				"escapable": true
 			}
 		}, {
-			"label": "Country",
-			"name": "country",
-			"data": "licenseInfo.country",
+			"label": "County",
+			"name": "county",
+			"data": "licenseInfo.county",
 			"meta": {
 				"searchable": true,
 				"sortable": true,
