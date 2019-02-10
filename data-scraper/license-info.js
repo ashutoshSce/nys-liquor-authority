@@ -106,14 +106,14 @@ async function parseItems(logger, items, definedObjects, index) {
 (async () => {
   const logger = new LoggerModule();
 
-  // process.on('unhandledRejection', (err) => {
-  //   logger.sendMessageToSlack('Caught exception: ' + err.toString()), then(() => {
-  //     spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
-  //       detached: true
-  //     });
-  //     process.exit();
-  //   });
-  // });
+  process.on('unhandledRejection', (err) => {
+    logger.sendMessageToSlack('Caught exception: ' + err.toString()), then(() => {
+      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+        detached: true
+      });
+      process.exit();
+    });
+  });
 
   logger.sendMessageToSlack('Start Running, limiting records by ' + limit);
   const mongo = new MongoModule();
@@ -125,20 +125,25 @@ async function parseItems(logger, items, definedObjects, index) {
   }
 
   definedObjects.license_type = swap(definedObjects.license_type);
+  definedObjects.county = swap(definedObjects.county);
   const licensePageList = await mongo.readObjectByJoin('licensePage', 0, limit);
 
   const browser = await puppeteer.launch({
     headless: true,
-    ignoreHTTPSErrors: true
+    ignoreHTTPSErrors: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
   for (let i = 0; i < licensePageList.length; i++) {
     const serialNumber = licensePageList[i].serial_number;
     const licenseType = licensePageList[i].license_type;
     const pageUrl = 'https://www.tran.sla.ny.gov/servlet/ApplicationServlet?pageName=com.ibm.nysla.data.publicquery.PublicQuerySuccessfulResultsPage&validated=true&serialNumber=' + serialNumber + '&licenseType=' + licenseType;
-    await page.goto(pageUrl, {
-      waitUntil: 'networkidle2'
-    });
+    
+    try{
+      await page.goto(pageUrl);
+    } catch(exec){
+      
+    }
 
     let items = await page.evaluate((definedObjects) => {
       var items = {};
@@ -210,6 +215,15 @@ async function parseItems(logger, items, definedObjects, index) {
 
     if (items['zip'] !== undefined && items['zip'].trim() === ',') {
       delete items['zip'];
+    }
+
+    if (items['county'] !== undefined) {
+      items['county'] = items['county'].trim();
+      if(definedObjects.county[items['county']] === undefined){
+        logger.sendMessageToSlack('New County found. '+items['county']);
+      } else {
+        items['county'] = definedObjects.county[items['county']];
+      }
     }
 
     const queryObj = {

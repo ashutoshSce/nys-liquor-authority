@@ -38,7 +38,8 @@ let countyIndex = parseInt(process.argv[2]);
 
   const browser = await puppeteer.launch({
     headless: true,
-    ignoreHTTPSErrors: true
+    ignoreHTTPSErrors: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
   while (countyIndex < countyList.length) {
@@ -49,10 +50,11 @@ let countyIndex = parseInt(process.argv[2]);
     });
 
     const pageUrl = 'https://www.tran.sla.ny.gov/JSP/query/PublicQueryAdvanceSearchPage.jsp';
-    await page.goto(pageUrl, {
-      waitUntil: 'networkidle2',
-      timeout: 20000
-    });
+    try{
+      await page.goto(pageUrl);
+    } catch(exec){
+      
+    }
 
     await page.select('#county', countyList[countyIndex]);
     await Promise.all([

@@ -321,7 +321,7 @@
 				"rogue": false,
 				"total": false,
 				"date": false,
-				"array": false,
+				"array": true,
 				"icon": false,
 				"clickable": false,
 				"customTotal": false,

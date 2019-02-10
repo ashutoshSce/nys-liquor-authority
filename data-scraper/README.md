@@ -19,17 +19,17 @@ Add master records to mongo collection, by running
 node insert-into-master.js
 ```
 
-Now either set up cron to run download-latest-list.js file once in a day.
+Now either set up cron to run license-county.js file once in a day.
 
 ```bash
 crontab -e
-0 1 * * * path/to/node path/to/download-latest-list.js NEW 1 
+0 1 * * * path/to/node path/to/license-county.js NEW 1 
 ```
 
 OR directly run code in terminal
 
 ```bash
-node download-latest-list.js NEW 1 
+node license-county.js NEW 1 
 ```
 
 Note: Here ```NEW``` will tell scraper to download only New York data, you may add different region code.
