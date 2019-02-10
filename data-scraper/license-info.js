@@ -26,15 +26,27 @@ async function parseItems(logger, items, definedObjects, index) {
     items['serial_number'] = items['serial_number'].trim();
     items['serial_number'] = parseFloat(items['serial_number']);
 
+    if (items['county'] !== undefined) {
+      items['county'] = items['county'].trim();
+      if (definedObjects.county[items['county']] === undefined) {
+        logger.sendMessageToSlack('New County found. ' + items['county']);
+        resolve(null);
+        return null;
+      } else {
+        items['county'] = definedObjects.county[items['county']];
+      }
+    }
+
     if (items['license_type'] !== undefined) {
       items['license_type'] = items['license_type'].trim();
       if (definedObjects.license_type[items['license_type']] === undefined) {
         let message = 'Index:' + index + ' New License Type:' + items['license_type'] + ' Link:' + items['link'];
-        logger.sendMessageToSlack(message).then(() => {
-          process.exit()
-        });
+        logger.sendMessageToSlack(message);
+        resolve(null);
+        return null;
+      } else {
+        items['license_type'] = definedObjects.license_type[items['license_type']];
       }
-      items['license_type'] = definedObjects.license_type[items['license_type']];
     }
 
     if (items['license_status'] !== undefined) {
@@ -44,10 +56,14 @@ async function parseItems(logger, items, definedObjects, index) {
         items['license_status'] = licenseStatusMaster[items['license_status']];
       } else {
         let message = 'Index:' + index + ' New License Status:' + items['license_status'] + ' Link:' + items['link'];
-        logger.sendMessageToSlack(message).then(() => {
-          process.exit()
-        });
+        logger.sendMessageToSlack(message);
+        resolve(null);
+        return null;
       }
+    }
+
+    if (items['zip'] !== undefined && (items['zip'].trim() === '' || items['zip'].trim() === ',')) {
+      delete items['zip'];
     }
 
     if (items['credit_group'] !== undefined && items['credit_group'].trim() !== '') {
@@ -108,7 +124,7 @@ async function parseItems(logger, items, definedObjects, index) {
 
   process.on('unhandledRejection', (err) => {
     logger.sendMessageToSlack('Caught exception: ' + err.toString()), then(() => {
-      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+      spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
         detached: true
       });
       process.exit();
@@ -138,11 +154,11 @@ async function parseItems(logger, items, definedObjects, index) {
     const serialNumber = licensePageList[i].serial_number;
     const licenseType = licensePageList[i].license_type;
     const pageUrl = 'https://www.tran.sla.ny.gov/servlet/ApplicationServlet?pageName=com.ibm.nysla.data.publicquery.PublicQuerySuccessfulResultsPage&validated=true&serialNumber=' + serialNumber + '&licenseType=' + licenseType;
-    
-    try{
+
+    try {
       await page.goto(pageUrl);
-    } catch(exec){
-      
+    } catch (exec) {
+
     }
 
     let items = await page.evaluate((definedObjects) => {
@@ -205,7 +221,7 @@ async function parseItems(logger, items, definedObjects, index) {
     }
 
     items['link'] = pageUrl;
-    items = await parseItems(logger, items, definedObjects, i);
+
     if (items['license_type'] === undefined) {
       await mongo.destroyObject('licensePage', {
         serial_number: items.serial_number
@@ -213,17 +229,9 @@ async function parseItems(logger, items, definedObjects, index) {
       continue;
     }
 
-    if (items['zip'] !== undefined && items['zip'].trim() === ',') {
-      delete items['zip'];
-    }
-
-    if (items['county'] !== undefined) {
-      items['county'] = items['county'].trim();
-      if(definedObjects.county[items['county']] === undefined){
-        logger.sendMessageToSlack('New County found. '+items['county']);
-      } else {
-        items['county'] = definedObjects.county[items['county']];
-      }
+    items = await parseItems(logger, items, definedObjects, i);
+    if(items === null){
+      continue;
     }
 
     const queryObj = {
@@ -242,7 +250,7 @@ async function parseItems(logger, items, definedObjects, index) {
     logger.sendMessageToSlack('Finished Scraping, zero record found.');
   } else {
     logger.sendMessageToSlack('Finished Scraping, reached to limit ' + limit).then(() => {
-      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+      spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
         detached: true
       });
       process.exit();

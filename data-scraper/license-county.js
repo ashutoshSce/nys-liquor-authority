@@ -17,7 +17,7 @@ let countyIndex = parseInt(process.argv[2]);
 
   process.on('unhandledRejection', (err) => {
     logger.sendMessageToSlack('Caught exception: ' + err.toString()).then(() => {
-      spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-county.js', countyIndex], {
+      spawn(process.env.NODE_PATH, [__dirname + '/license-county.js', countyIndex], {
         detached: true
       });
       process.exit();
@@ -125,7 +125,7 @@ let countyIndex = parseInt(process.argv[2]);
   await mongo.disconnectToDb();
 
   logger.sendMessageToSlack('Finished scraping countywise.').then(() => {
-    spawn(process.env.NODE_PATH, [process.env.APP_PATH + '/license-info.js'], {
+    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
       detached: true
     });
     process.exit();

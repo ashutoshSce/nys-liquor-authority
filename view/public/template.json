@@ -358,7 +358,7 @@
 			}
 		}],
 		"readPath": "\/api\/v1\/liquor-license",
-		"lengthMenu": [10, 15, 20, 25, 30],
+		"lengthMenu": [10, 25, 50, 100],
 		"debounce": 350,
 		"method": "GET",
 		"selectable": false,

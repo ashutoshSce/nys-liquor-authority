@@ -138,6 +138,10 @@ const get = async (req, res) => {
       liquorLicenseList[index].license_status = licenseMaster.license_status[liquorLicenseList[index].license_status];
     }
 
+    if (licenseMaster.county[liquorLicenseList[index].county] !== undefined) {
+      liquorLicenseList[index].county = licenseMaster.county[liquorLicenseList[index].county];
+    }
+
     if (req.query.exportExcel === undefined) {
       liquorLicenseList[index].serial_number = `<a href="${liquorLicenseList[index].link}" target="_blank">${liquorLicenseList[index].serial_number}</a>`;
     }
