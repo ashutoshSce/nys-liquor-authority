@@ -60,7 +60,8 @@ function transport() {
 
 const logger = createLogger({
   transports: transport(),
-  prettyPrint: true,                                                                                                   handleExceptions: true,
+  prettyPrint: true,
+  handleExceptions: true,
   exitOnError: false
 });
 

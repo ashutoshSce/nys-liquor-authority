@@ -93,30 +93,6 @@
 				"escapable": true
 			}
 		}, {
-			"label": "Credit Group",
-			"name": "credit_group",
-			"data": "licenseInfo.credit_group",
-			"meta": {
-				"searchable": true,
-				"sortable": true,
-				"translatable": false,
-				"boolean": false,
-				"slot": false,
-				"rogue": false,
-				"total": false,
-				"date": false,
-				"array": false,
-				"icon": false,
-				"clickable": false,
-				"customTotal": false,
-				"notExportable": false,
-				"nullLast": false,
-				"visible": true,
-				"hidden": false,
-				"sort": null,
-				"escapable": true
-			}
-		}, {
 			"label": "Filing Date",
 			"name": "filing_date",
 			"data": "licenseInfo.filing_date",
@@ -189,6 +165,30 @@
 				"escapable": true
 			}
 		}, {
+			"label": "County",
+			"name": "county",
+			"data": "licenseInfo.county",
+			"meta": {
+				"searchable": true,
+				"sortable": true,
+				"translatable": false,
+				"boolean": false,
+				"slot": false,
+				"rogue": false,
+				"total": false,
+				"date": false,
+				"array": true,
+				"icon": false,
+				"clickable": false,
+				"customTotal": false,
+				"notExportable": false,
+				"nullLast": false,
+				"visible": true,
+				"hidden": false,
+				"sort": null,
+				"escapable": true
+			}
+		}, {
 			"label": "Premises Name",
 			"name": "premises_name",
 			"data": "licenseInfo.premises_name",
@@ -216,6 +216,30 @@
 			"label": "Trade Name",
 			"name": "trade_name",
 			"data": "licenseInfo.trade_name",
+			"meta": {
+				"searchable": true,
+				"sortable": true,
+				"translatable": false,
+				"boolean": false,
+				"slot": false,
+				"rogue": false,
+				"total": false,
+				"date": false,
+				"array": false,
+				"icon": false,
+				"clickable": false,
+				"customTotal": false,
+				"notExportable": false,
+				"nullLast": false,
+				"visible": true,
+				"hidden": false,
+				"sort": null,
+				"escapable": true
+			}
+		}, {
+			"label": "Credit Group",
+			"name": "credit_group",
+			"data": "licenseInfo.credit_group",
 			"meta": {
 				"searchable": true,
 				"sortable": true,
@@ -298,30 +322,6 @@
 				"total": false,
 				"date": false,
 				"array": false,
-				"icon": false,
-				"clickable": false,
-				"customTotal": false,
-				"notExportable": false,
-				"nullLast": false,
-				"visible": true,
-				"hidden": false,
-				"sort": null,
-				"escapable": true
-			}
-		}, {
-			"label": "County",
-			"name": "county",
-			"data": "licenseInfo.county",
-			"meta": {
-				"searchable": true,
-				"sortable": true,
-				"translatable": false,
-				"boolean": false,
-				"slot": false,
-				"rogue": false,
-				"total": false,
-				"date": false,
-				"array": true,
 				"icon": false,
 				"clickable": false,
 				"customTotal": false,

@@ -3,7 +3,6 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
 require('./models');
-const logger = require('./logger');
 const router = require('../routes');
 
 const app = express();

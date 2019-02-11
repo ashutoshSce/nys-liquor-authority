@@ -12,6 +12,7 @@
       @reload="fetch()"
       @reset="resetPreferences"
       @request-full-info="forceInfo = true; fetch()"
+      @update-visibility="fetch()"
       v-on="$listeners"
       v-model="search"
     />
@@ -397,6 +398,7 @@ export default {
             rogue: column.meta.rogue,
             notExportable: column.meta.notExportable,
             array: column.meta.array,
+            visible: column.meta.visible
           },
           enum: column.enum,
         });

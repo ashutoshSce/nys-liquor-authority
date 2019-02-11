@@ -149,18 +149,15 @@ async function parseItems(logger, items, definedObjects, index) {
     ignoreHTTPSErrors: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
-  const page = await browser.newPage();
+  
   for (let i = 0; i < licensePageList.length; i++) {
+    const page = await browser.newPage();
     const serialNumber = licensePageList[i].serial_number;
     const licenseType = licensePageList[i].license_type;
     const pageUrl = 'https://www.tran.sla.ny.gov/servlet/ApplicationServlet?pageName=com.ibm.nysla.data.publicquery.PublicQuerySuccessfulResultsPage&validated=true&serialNumber=' + serialNumber + '&licenseType=' + licenseType;
 
-    try {
-      await page.goto(pageUrl);
-    } catch (exec) {
-
-    }
-
+    await page.goto(pageUrl);
+   
     let items = await page.evaluate((definedObjects) => {
       var items = {};
       var extraItems = new Array();
@@ -240,9 +237,10 @@ async function parseItems(logger, items, definedObjects, index) {
     const oldValue = await mongo.queryObject('licenseInfo', queryObj);
     oldValue === null ? await mongo.writeObject('licenseInfo', items) :
       await mongo.updateObject('licenseInfo', items, queryObj);
+    
+    await page.close();
   }
-
-  await page.close();
+  
   await browser.close();
   await mongo.disconnectToDb();
 

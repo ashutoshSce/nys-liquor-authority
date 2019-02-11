@@ -1,16 +1,12 @@
-const {
-  to
-} = require('await-to-js');
-const util = require('util');
+const { to } = require('await-to-js');
 const fp = require('lodash/fp');
 
-const logger = require('../logger');
 const liquorLicenseMaster = require('../models/liquorLicenseMaster.model');
 
 const get = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
-  let licenseMaster, err, liquorLicenseTypeList = [];
-  [err, licenseMaster] = await to(liquorLicenseMaster.findOne().lean());
+  let liquorLicenseTypeList = [];
+  const [, licenseMaster] = await to(liquorLicenseMaster.findOne().lean());
   Object.keys(licenseMaster.license_type).forEach(key => {
     liquorLicenseTypeList.push({
       id: key,

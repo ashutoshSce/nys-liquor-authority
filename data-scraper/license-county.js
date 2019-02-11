@@ -41,7 +41,6 @@ let countyIndex = parseInt(process.argv[2]);
     ignoreHTTPSErrors: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
-  const page = await browser.newPage();
   while (countyIndex < countyList.length) {
     let message = 'Start Running, getting records for Index:' + countyIndex + ' and county ' + definedObjects.county[countyList[countyIndex]];
     logger.sendMessageToSlack(message);
@@ -49,23 +48,20 @@ let countyIndex = parseInt(process.argv[2]);
       county: countyList[countyIndex]
     });
 
+    const page = await browser.newPage();
     const pageUrl = 'https://www.tran.sla.ny.gov/JSP/query/PublicQueryAdvanceSearchPage.jsp';
-    try{
-      await page.goto(pageUrl);
-    } catch(exec){
-      
-    }
+    await page.goto(pageUrl);
 
     await page.select('#county', countyList[countyIndex]);
     await Promise.all([
       page.click('#searchButton'),
-      page.waitForNavigation({
-        waitUntil: 'networkidle0'
-      }),
+      page.waitForSelector('form[name=AdvanceSearchResults] a:nth-child(2)')
     ]);
 
-    await page.click('form[name=AdvanceSearchResults] a:nth-child(2)');
-    await page.waitFor(6000);
+    await Promise.all([
+      page.click('form[name=AdvanceSearchResults] a:nth-child(2)'),
+      page.waitForSelector('body > pre')
+    ]);
 
     const textContent = await page.content();
 
@@ -118,12 +114,12 @@ let countyIndex = parseInt(process.argv[2]);
 
     logger.sendMessageToSlack('Finished Scraping, ' + objectList.length + ' records found for Index:' + countyIndex + ' and county ' + definedObjects.county[countyList[countyIndex]]);
     countyIndex++;
+
+    await page.close();
   }
 
-  await page.close();
   await browser.close();
   await mongo.disconnectToDb();
-
   logger.sendMessageToSlack('Finished scraping countywise.').then(() => {
     spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
       detached: true

@@ -85,6 +85,10 @@ const items = {
         "SL-": "SUMMER CLUB LIQUOR",
         "SL1": "SUMMER VESSEL LIQUOR",
         "SL2":"SUMMER (0. P.) ENTERTAINMENT",
+        "SL3":"SUMMER RESTAURANT LIQUOR",
+        "SL4":"SUMMER GOLF CLUB", 
+        "SL5":"SUMMER HOTEL LIQUOR",
+        "SL6":"SUMMER CATERING LIQUOR",
         "ST": "TEMPORARY PERMIT",
         "SW": "SUMMER RESTAURANT WINE",
         "TL": "O.P. FOOD AND BEV",
@@ -102,6 +106,7 @@ const items = {
         "ZB": "WINTER EATING PLACE BEER",
         "ZL": "WINTER (O.P.) FOOD &amp; BEV",
         "ZL-":"WINTER CLUB LIQUOR",
+        "ZL1":"WINTER (O.P.) ENTERTAINMENT",
         "ZT": "WINTER TAVERN WINE",
         "ZW": "WINTER RESTAURANT WINE"
     },
