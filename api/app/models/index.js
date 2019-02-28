@@ -1,3 +1,4 @@
+const util = require('util');
 const mongoose = require('mongoose');
 const config = require('../../config');
 const logger = require('../logger');
@@ -15,6 +16,9 @@ mongoose
   });
 
 mongoose.Promise = global.Promise;
+/* mongoose.set('debug', (collectionName, method, query, doc) => {
+ logger.debug(collectionName+' '+method+' '+util.format(query)+' '+util.format(doc));
+}); */
 
 const db = mongoose.connection;
 

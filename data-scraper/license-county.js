@@ -58,10 +58,11 @@ let countyIndex = parseInt(process.argv[2]);
       page.waitForSelector('form[name=AdvanceSearchResults] a:nth-child(2)')
     ]);
 
-    await Promise.all([
-      page.click('form[name=AdvanceSearchResults] a:nth-child(2)'),
-      page.waitForSelector('body > pre')
-    ]);
+    await page.evaluate(() => {
+      document.querySelector('form[name=AdvanceSearchResults] a:nth-child(2)').click();
+    });
+    
+    await page.waitFor(60000);
 
     const textContent = await page.content();
 

@@ -101,7 +101,7 @@ module.exports = class Mongo {
       }
       
       batch.execute((err, result) => {
-        if (err) throw err;
+        if (err) { console.log(require('util').format(objList)); throw err; };
         resolve();
       });
     });

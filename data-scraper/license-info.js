@@ -123,7 +123,7 @@ async function parseItems(logger, items, definedObjects, index) {
   const logger = new LoggerModule();
 
   process.on('unhandledRejection', (err) => {
-    logger.sendMessageToSlack('Caught exception: ' + err.toString()), then(() => {
+    logger.sendMessageToSlack('Caught exception: ' + err.toString()).then(() => {
       spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
         detached: true
       });
@@ -218,16 +218,16 @@ async function parseItems(logger, items, definedObjects, index) {
     }
 
     items['link'] = pageUrl;
-
     if (items['license_type'] === undefined) {
       await mongo.destroyObject('licensePage', {
-        serial_number: items.serial_number
+        serial_number: parseFloat(items.serial_number)
       });
+      await page.close();
       continue;
     }
-
     items = await parseItems(logger, items, definedObjects, i);
     if(items === null){
+      await page.close();
       continue;
     }
 
@@ -253,5 +253,5 @@ async function parseItems(logger, items, definedObjects, index) {
       });
       process.exit();
     });
-  }
+   }
 })();
