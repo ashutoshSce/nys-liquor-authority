@@ -16,7 +16,8 @@ let countyIndex = parseInt(process.argv[2]);
   const logger = new LoggerModule();
 
   process.on('unhandledRejection', (err) => {
-    logger.sendMessageToSlack('Caught exception: ' + err.toString()).then(() => {
+    console.log(require('util').format(err));
+    logger.sendMessageToSlack('Caught exceptionn: ' + err.toString()).then(() => {
       spawn(process.env.NODE_PATH, [__dirname + '/license-county.js', countyIndex], {
         detached: true
       });
@@ -111,7 +112,32 @@ let countyIndex = parseInt(process.argv[2]);
       logger.sendMessageToSlack(newLicenseList.join('\n'));
     }
 
-    await mongo.writeUnOrderedBulkObject('licensePage', objectList);
+    let flag = true;
+    while (flag) {
+      await mongo.writeUnOrderedBulkObject('licensePage', objectList)
+        .then(() => {
+          if (typeof serialIds === 'undefined') {
+            flag = false;
+          } else if(serialIds.length > 0) {
+             mongo.destroyObject('licenseInfo', {
+              serial_number: {
+                $in: serialIds
+              }
+             });
+	     mongo.destroyObject('licensePage', {
+              $or: [{
+                  county: countyList[countyIndex]
+                },
+                {
+                  serial_number: {
+                    $in: serialIds
+                  }
+                }
+              ]
+            }).then(() => flag = true)		  
+          } else { throw new Error('Empty Serial IDs Exception.'); }
+        })
+    }
 
     logger.sendMessageToSlack('Finished Scraping, ' + objectList.length + ' records found for Index:' + countyIndex + ' and county ' + definedObjects.county[countyList[countyIndex]]);
     countyIndex++;

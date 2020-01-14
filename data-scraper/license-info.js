@@ -28,10 +28,12 @@ async function parseItems(logger, items, definedObjects, index) {
 
     if (items['county'] !== undefined) {
       items['county'] = items['county'].trim();
-      if (definedObjects.county[items['county']] === undefined) {
+      if (items['county'].trim().length > 0 && definedObjects.county[items['county']] === undefined) {
         logger.sendMessageToSlack('New County found. ' + items['county']);
         resolve(null);
         return null;
+      }else if(items['county'].trim().length === 0) {
+       
       } else {
         items['county'] = definedObjects.county[items['county']];
       }

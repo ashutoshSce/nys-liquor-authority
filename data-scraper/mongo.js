@@ -101,8 +101,30 @@ module.exports = class Mongo {
       }
       
       batch.execute((err, result) => {
-        if (err) { console.log(require('util').format(objList)); throw err; };
-        resolve();
+        if (err) {
+          let serialIds = [];
+          if (err.name === 'BulkWriteError') {
+            if (typeof err.op !== 'undefined') {
+              serialIds.push(err.op.serial_number);
+            } else {
+              let sLength = err.writeErrors.length;
+              for (let index = 0; index < sLength; index++) {
+                serialIds.push(err.writeErrors[index].err.op.serial_number);
+              }
+            }
+	    resolve(serialIds);	  
+          } else { throw err; }
+        } else { resolve(); }
+      });
+
+    });
+  }
+
+  destroyOneObject(collectionName, query) {
+    return new Promise((resolve, reject) => {
+      this.db.collection(collectionName).deleteOne(query, function (err, result) {
+        if (err) throw err;
+        resolve(result);
       });
     });
   }

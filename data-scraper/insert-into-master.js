@@ -22,6 +22,7 @@ const items = {
     },
     license_type: {
         "00": "NOT SELECTED",
+	"9": "LIQUOR - NO FEE",
         "A": "GROCERY STORE BEER",
         "AL": "AIRLINE COMPANY",
         "AX": "GROCERY BEER, WINE PROD",
@@ -64,6 +65,7 @@ const items = {
         "FP": "TEMPORARY WINERY/FARM WINERY",
         "FV": "FISHING VESSEL",
         "FW": "FARM WINERY",
+	"FY": "FARM MEADERY",
         "GC": "GOLF CLUB",
         "HB": "HOTEL BEER",
         "HL": "HOTEL LIQUOR",
@@ -71,6 +73,7 @@ const items = {
         "IL": "IMPORTER",
         "L": "LIQUOR STORE",
         "LL": "WHOLESALE LIQUOR",
+        "MD": "MEAD PRODUCER",
         "MI": "MICRO BREWER",
         "MR": "RESTAURANT BREWER",
         "MU": "MIXED USE LIQUOR",
