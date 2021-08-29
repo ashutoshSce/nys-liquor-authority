@@ -51,10 +51,19 @@ let countyIndex = parseInt(process.argv[2]);
     await page.goto(pageUrl);
 
     await page.select('#county', countyList[countyIndex]);
-    await Promise.all([
-      page.click('#searchButton'),
-      page.waitForSelector('form[name=AdvanceSearchResults] a:nth-child(2)')
-    ]);
+
+    await page.click('#searchButton');
+
+    try {
+      await page.waitForSelector('form[name=AdvanceSearchResults] a:nth-child(2)');
+    } catch(error) {
+      countyIndex++;
+      logger.sendMessageToSlack('No result found' + error.toString());
+      spawn(process.env.NODE_PATH, [__dirname + '/license-county.js', countyIndex], {
+        detached: true
+      });
+      process.exit();
+    }
 
     await page.evaluate(() => {
       document.querySelector('form[name=AdvanceSearchResults] a:nth-child(2)').click();
