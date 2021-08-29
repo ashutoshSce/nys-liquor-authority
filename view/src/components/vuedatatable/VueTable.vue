@@ -1,9 +1,13 @@
 <template>
-  <div class="table-wrapper" v-if="initialised">
+  <div
+    v-if="initialised"
+    class="table-wrapper"
+  >
     <top-controls
       :template="template"
       :i18n="i18n"
       :length="length"
+      v-model="search"
       :loading="loading"
       :info="body !== null && !body.fullRecordInfo"
       @update-length="length=$event"
@@ -14,31 +18,37 @@
       @request-full-info="forceInfo = true; fetch()"
       @update-visibility="fetch()"
       v-on="$listeners"
-      v-model="search"
     />
-    <div class="table-responsive" v-responsive>
-      <table class="table is-fullwidth is-marginless" :class="template.style" id="id">
+    <div
+      v-responsive
+      class="table-responsive"
+    >
+      <table
+        id="id"
+        class="table is-fullwidth is-marginless"
+        :class="template.style"
+      >
         <table-header
+          v-if="hasContent"
+          ref="header"
           :template="template"
           :i18n="i18n"
           @sort-update="fetch"
           @select-page="selectPage"
-          ref="header"
-          v-if="hasContent"
         />
         <table-body
           :template="template"
-          v-on="$listeners"
           :body="body"
           :start="start"
           :i18n="i18n"
+          ref="body"
           :expanded="expanded"
+          v-if="hasContent"
           :selected="selected"
           :highlighted="highlighted"
+          v-on="$listeners"
           @ajax="ajax"
           @update-selected="updateSelectedFlag"
-          ref="body"
-          v-if="hasContent"
         >
           <template
             v-for="column in template.columns"
@@ -51,7 +61,9 @@
               :column="column"
               :row="row"
               :loading="loading"
-            >{{ row[column.name] }}</slot>
+            >
+              {{ row[column.name] }}
+            </slot>
           </template>
         </table-body>
         <table-footer
@@ -63,20 +75,23 @@
         >
           <template
             v-for="i in visibleColumns.length - 1"
-            :slot="`${visibleColumns[i].name}_custom_total`"
             v-if="visibleColumns[i].meta.customTotal"
+            :slot="`${visibleColumns[i].name}_custom_total`"
           >
             <slot
               :name="`${visibleColumns[i].name}_custom_total`"
               :total="body ? body.total : []"
               :column="visibleColumns[i]"
-            >{{ `${visibleColumns[i].name}_custom_total` }}</slot>
+            >
+              {{ `${visibleColumns[i].name}_custom_total` }}
+            </slot>
           </template>
         </table-footer>
       </table>
-      <overlay v-if="loading"/>
+      <overlay v-if="loading" />
     </div>
     <bottom-controls
+      v-if="hasContent"
       class="bottom-controls"
       :body="body"
       :i18n="i18n"
@@ -85,12 +100,13 @@
       :length="length"
       :selected="selected"
       @jump-to="start = $event; fetch()"
-      v-if="hasContent"
     />
     <div
-      class="has-text-centered no-records-found"
       v-if="isEmpty"
-    >{{ i18n('No records were found') }}</div>
+      class="has-text-centered no-records-found"
+    >
+      {{ i18n('No records were found') }}
+    </div>
   </div>
 </template>
 
@@ -398,7 +414,7 @@ export default {
             rogue: column.meta.rogue,
             notExportable: column.meta.notExportable,
             array: column.meta.array,
-            visible: column.meta.visible
+            visible: column.meta.visible,
           },
           enum: column.enum,
         });
@@ -407,9 +423,9 @@ export default {
     },
     processMoney(body) {
       this.template.columns
-        .filter(column => column.money)
+        .filter((column) => column.money)
         .forEach((column) => {
-          let money = body.data.map(row => parseFloat(row[column.name]) || 0);
+          let money = body.data.map((row) => parseFloat(row[column.name]) || 0);
           money = accounting.formatColumn(money, column.money);
 
           body.data = body.data.map((row, index) => {
@@ -432,11 +448,11 @@ export default {
         path,
         this.exportRequest(),
       ).then((data) => {
-         let params = data.data.split('exportExcel=1');
-         if(params[1] !== undefined){
-            window.open((path+params[1]).replace('exportExcel=1', 'exportExcel=2'));
-         }
-        }).catch((error) => {
+        const params = data.data.split('exportExcel=1');
+        if (params[1] !== undefined) {
+          window.open((path + params[1]).replace('exportExcel=1', 'exportExcel=2'));
+        }
+      }).catch((error) => {
         const { status, data } = error.response;
 
         if (status === 555) {
@@ -480,7 +496,7 @@ export default {
             this.$emit(postEvent);
           }
         })
-        .catch(error => this.handleError(error));
+        .catch((error) => this.handleError(error));
     },
     action(method, path, postEvent) {
       this.loading = true;
@@ -493,7 +509,7 @@ export default {
             this.$emit(postEvent);
           }
         })
-        .catch(error => this.handleError(error));
+        .catch((error) => this.handleError(error));
     },
     filterUpdate() {
       if (!this.initialised) {
@@ -512,7 +528,7 @@ export default {
       }
 
       const selected = this.body.data.filter(
-        row => this.selected.findIndex(id => id === row.dtRowId) === -1,
+        (row) => this.selected.findIndex((id) => id === row.dtRowId) === -1,
       ).length === 0;
 
       this.$refs.header.updateSelectedFlag(selected);

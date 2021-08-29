@@ -19,8 +19,8 @@
       {{ i18n('Next') }}
     </a>
     <ul
-      class="pagination-list"
       v-if="extended"
+      class="pagination-list"
     >
       <li>
         <a

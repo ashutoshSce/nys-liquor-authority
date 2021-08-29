@@ -26,7 +26,7 @@ class ResponsiveTable {
 
   hideColumn() {
     const column = this.context.template.columns
-      .filter(column => column.meta.visible && !column.meta.hidden && !column.meta.rogue)
+      .filter((column) => column.meta.visible && !column.meta.hidden && !column.meta.rogue)
       .pop();
 
     if (!column) {
@@ -40,7 +40,7 @@ class ResponsiveTable {
 
   showColumn() {
     const column = this.context.template.columns
-      .find(column => column.meta.hidden);
+      .find((column) => column.meta.hidden);
 
     if (!column) {
       return;

@@ -31,7 +31,7 @@ export default {
 
         (new Toastr({
           propsData: {
-            ...options,
+            options: JSON.parse(JSON.stringify(options)),
             type,
             body,
             title,

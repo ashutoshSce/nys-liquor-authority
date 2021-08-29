@@ -6,31 +6,31 @@
       :class="highlighted.includes(index) ? template.highlight : null"
     >
       <td
-        :class="template.align"
         v-if="template.selectable && !isChild(row)"
+        :class="template.align"
       >
         <div class="selectable">
           <label class="checkbox">
             <input
+              v-model="$parent.selected"
               type="checkbox"
               :value="row.dtRowId"
-              v-model="$parent.selected"
               @change="$emit('update-selected')"
             >
           </label>
         </div>
       </td>
       <td
-        :class="template.align"
         v-if="template.crtNo && !isChild(row)"
+        :class="template.align"
       >
         <div class="crt-no">
           <span class="crt-no-label">
             {{ rowIndex(row) }}
           </span>
           <span
-            class="hidden-controls"
             v-if="hiddenCount"
+            class="hidden-controls"
             @click="toggleExpand(row, index)"
           >
             <span class="icon is-small">
@@ -40,6 +40,9 @@
         </div>
       </td>
       <td
+        v-for="(column, idx) in template.columns"
+        v-if="column.meta.visible && !column.meta.hidden && !column.meta.rogue && !isChild(row)"
+        :key="idx"
         :class="[
           column.class,
           { 'is-money' : column.money },
@@ -47,9 +50,6 @@
             ? template.aligns[column.align]
             : template.align
         ]"
-        v-for="(column, idx) in template.columns"
-        :key="idx"
-        v-if="column.meta.visible && !column.meta.hidden && !column.meta.rogue && !isChild(row)"
       >
         <table-cell
           :i18n="i18n"
@@ -59,9 +59,9 @@
           @clicked="clicked(row, column)"
         >
           <span
+            v-if="cascadesHiddenControls && idx === 0"
             slot="hidden-controls"
             class="hidden-controls"
-            v-if="cascadesHiddenControls && idx === 0"
             @click="toggleExpand(row, index)"
           >
             <span class="icon is-small">
@@ -69,8 +69,8 @@
             </span>
           </span>
           <span
-            :slot="column.name"
             v-if="column.meta.slot"
+            :slot="column.name"
           >
             <slot
               :name="column.name"
@@ -81,15 +81,15 @@
         </table-cell>
       </td>
       <td
+        v-if="template.actions && !isChild(row)"
         class="table-actions"
         :class="template.align"
-        v-if="template.actions && !isChild(row)"
       >
         <span class="table-action-buttons">
           <a
             v-for="(button, index) in template.buttons.row"
-            v-tooltip="i18n(button.tooltip)"
             :key="index"
+            v-tooltip="i18n(button.tooltip)"
             class="button is-small is-table-button has-margin-left-small"
             :class="button.class"
             :href="button.action === 'href' ? path(button, row.dtRowId) : null"
@@ -105,15 +105,15 @@
         </span>
       </td>
       <td
+        v-if="isChild(row)"
         :colspan="hiddenColSpan"
         :class="template.align"
-        v-if="isChild(row)"
       >
         <ul>
           <li
-            class="child-row"
             v-for="(item, index) in row"
             :key="index"
+            class="child-row"
           >
             <span v-if="!item.column.meta.rogue">
               <b>{{ i18n(item.column.label) }}</b>:
@@ -124,8 +124,8 @@
                 @clicked="clicked(body.data[item.index], item.column)"
               >
                 <span
-                  :slot="item.column.name"
                   v-if="item.column.meta.slot"
+                  :slot="item.column.name"
                 >
                   <slot
                     :name="item.column.name"
@@ -222,7 +222,7 @@ export default {
   computed: {
     hiddenColumns() {
       return this.template.columns.filter(
-        column => column.meta.hidden && column.meta.visible,
+        (column) => column.meta.hidden && column.meta.visible,
       );
     },
     hiddenCount() {
@@ -303,7 +303,7 @@ export default {
     rowIndex(row) {
       return (
         this.body.data
-          .filter(r => !this.isChild(r))
+          .filter((r) => !this.isChild(r))
           .findIndex(({ dtRowId }) => dtRowId === row.dtRowId)
         + this.start
         + 1
@@ -322,7 +322,7 @@ export default {
         return;
       }
 
-      const idx = this.expanded.findIndex(id => id === row.dtRowId);
+      const idx = this.expanded.findIndex((id) => id === row.dtRowId);
       this.expanded.splice(idx, 1);
       this.body.data.splice(index + 1, 1);
     },
@@ -350,7 +350,7 @@ export default {
           return indexes;
         }, [])
         .sort((a, b) => a < b)
-        .forEach(index => this.body.data.splice(index, 1));
+        .forEach((index) => this.body.data.splice(index, 1));
       this.expanded.splice(0);
     },
     clicked(row, column) {
@@ -361,7 +361,7 @@ export default {
     selectPage(status) {
       this.body.data.forEach((row) => {
         if (!this.isChild(row)) {
-          const index = this.selected.findIndex(id => id === row.dtRowId);
+          const index = this.selected.findIndex((id) => id === row.dtRowId);
 
           if (status && index === -1) {
             this.selected.push(row.dtRowId);

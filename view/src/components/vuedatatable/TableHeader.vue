@@ -2,38 +2,38 @@
   <thead>
     <tr :class="['has-background-light', template.style]">
       <th
-        :class="['vue-table-header', template.align]"
         v-if="template.selectable"
+        :class="['vue-table-header', template.align]"
       >
         <label class="checkbox">
           <input
-            type="checkbox"
             v-model="pageSelected"
+            type="checkbox"
             @change="$emit('select-page', pageSelected)"
           >
         </label>
       </th>
       <th
-        :class="['vue-table-header', template.align]"
         v-if="template.crtNo"
+        :class="['vue-table-header', template.align]"
       >
         {{ i18n(template.labels.crtNo) }}
       </th>
       <th
+        v-for="column in template.columns"
+        v-if="column.meta.visible && !column.meta.hidden && !column.meta.rogue"
+        :key="column.label"
         :class="[
           'vue-table-header',
           column.align
             ? template.aligns[column.align]
             : template.align
         ]"
-        v-for="column in template.columns"
-        :key="column.label"
-        v-if="column.meta.visible && !column.meta.hidden && !column.meta.rogue"
       >
         <span
+          v-if="column.meta.sortable"
           class="is-clickable"
           @click="toggleSort($event, column)"
-          v-if="column.meta.sortable"
         >
           {{ i18n(column.label) }}
         </span>
@@ -42,9 +42,9 @@
         </span>
         <span class="table-header-controls">
           <span
-            class="icon is-small has-text-info"
             v-if="column.tooltip"
             v-tooltip="i18n(column.tooltip)"
+            class="icon is-small has-text-info"
           >
             <fa
               icon="info"
@@ -52,9 +52,9 @@
             />
           </span>
           <span
+            v-if="column.meta.sortable"
             class="sorter"
             @click="toggleSort($event, column)"
-            v-if="column.meta.sortable"
           >
             <span class="icon is-small">
               <fa
@@ -64,15 +64,15 @@
             </span>
           </span>
           <a
-            class="delete is-small"
             v-if="column.meta.sort"
+            class="delete is-small"
             @click="clearColumnSort(column)"
           />
         </span>
       </th>
       <th
-        :class="['vue-table-header', template.align]"
         v-if="template.actions"
+        :class="['vue-table-header', template.align]"
       >
         {{ i18n(template.labels.actions) }}
       </th>
@@ -138,7 +138,7 @@ export default {
     clearColumnSort({ meta }) {
       meta.sort = null;
 
-      if (!this.template.columns.find(column => column.meta.sort !== null)) {
+      if (!this.template.columns.find((column) => column.meta.sort !== null)) {
         this.template.sort = false;
       }
 

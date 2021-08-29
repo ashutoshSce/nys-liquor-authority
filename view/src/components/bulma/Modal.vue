@@ -4,8 +4,8 @@
     leave-active-class="fadeOut"
   >
     <div
-      :class="['modal animated', { 'is-active': show }]"
       v-if="show"
+      :class="['modal animated', { 'is-active': show }]"
     >
       <div class="modal-background" />
       <div class="modal-content">
@@ -70,7 +70,7 @@ export default {
     mountWrapper() {
       return new Vue({
         name: 'ModalWrapper',
-        render: h => h('div'),
+        render: (h) => h('div'),
       }).$mount();
     },
     closeOnEsc(e) {

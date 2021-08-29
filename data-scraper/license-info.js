@@ -125,12 +125,11 @@ async function parseItems(logger, items, definedObjects, index) {
   const logger = new LoggerModule();
 
   process.on('unhandledRejection', (err) => {
-    logger.sendMessageToSlack('Caught exception: ' + err.toString()).then(() => {
-      spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
-        detached: true
-      });
-      process.exit();
+    logger.sendMessageToSlack('Caught exception: ' + err.toString());
+    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
+      detached: true
     });
+    process.exit();
   });
 
   logger.sendMessageToSlack('Start Running, limiting records by ' + limit);
@@ -138,7 +137,8 @@ async function parseItems(logger, items, definedObjects, index) {
   await mongo.connectToDb();
   const definedObjects = await mongo.readObject('licenseMaster');
   if (definedObjects === null) {
-    logger.sendMessageToSlack('Forgot to run insert-into-master.js file. Plz run `node insert-into-master.js`').then(process.exit());
+    logger.sendMessageToSlack('Forgot to run insert-into-master.js file. Plz run `node insert-into-master.js`');
+    process.exit();
     return;
   }
 
@@ -249,11 +249,10 @@ async function parseItems(logger, items, definedObjects, index) {
   if (licensePageList.length === 0) {
     logger.sendMessageToSlack('Finished Scraping, zero record found.');
   } else {
-    logger.sendMessageToSlack('Finished Scraping, reached to limit ' + limit).then(() => {
-      spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
-        detached: true
-      });
-      process.exit();
+    logger.sendMessageToSlack('Finished Scraping, reached to limit ' + limit);
+    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
+      detached: true
     });
+    process.exit();
    }
 })();

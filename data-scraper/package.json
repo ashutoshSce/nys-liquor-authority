@@ -10,9 +10,9 @@
   "author": "Ashutosh Kumar Jha",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^6.2.0",
-    "mongodb": "^3.1.12",
-    "puppeteer": "^1.12.2",
-    "request": "^2.88.0"
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
+    "mongodb": "^4.1.1",
+    "puppeteer": "^10.2.0"
   }
 }

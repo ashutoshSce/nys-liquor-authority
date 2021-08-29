@@ -1,12 +1,12 @@
 <template>
   <div
-    class="dropdown is-active"
     v-click-outside="hide"
+    class="dropdown is-active"
   >
     <div
+      v-click-outside="attemptHide"
       class="dropdown-trigger"
       @click="visible = !visible"
-      v-click-outside="attemptHide"
     >
       <button class="button">
         <slot name="label" />
@@ -24,8 +24,8 @@
       leave-active-class="fadeOut"
     >
       <div
-        class="animated dropdown-menu menu-list"
         v-if="visible"
+        class="animated dropdown-menu menu-list"
         :style="widthStyle"
       >
         <div

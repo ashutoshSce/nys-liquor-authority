@@ -10,6 +10,7 @@
     </div>
     <div class="column is-narrow has-text-right">
       <pagination
+        v-if="hasEntries"
         :loading="loading"
         :start="start"
         :length="length"
@@ -17,7 +18,6 @@
         :i18n="i18n"
         :extended="body.fullRecordInfo"
         @jump-to="$emit('jump-to', $event)"
-        v-if="hasEntries"
       />
     </div>
   </div>

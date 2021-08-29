@@ -4,9 +4,9 @@
       {{ label }}
     </span>
     <a
+      v-if="!disabled"
       class="tag is-delete"
       @click="$emit('remove')"
-      v-if="!disabled"
     />
   </div>
 </template>

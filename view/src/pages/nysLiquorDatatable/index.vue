@@ -3,29 +3,29 @@
     <div class="columns">
       <div class="column is-3-desktop is-8-tablet is-12-mobile">
         <vue-select-filter
+          v-model="filters.county"
           class="box"
           title="County"
           multiple
           :source="'api/v1/liquor-county'"
-          v-model="filters.county"
         />
       </div>
       <div class="column is-3-desktop is-8-tablet is-12-mobile">
         <vue-select-filter
+          v-model="filters.license_type"
           class="box"
           title="License Type"
           multiple
           :source="'api/v1/liquor-license-type'"
-          v-model="filters.license_type"
         />
       </div>
       <div class="column is-3-desktop is-8-tablet is-12-mobile">
         <vue-select-filter
+          v-model="filters.license_status"
           class="box"
           title="License Status"
           multiple
           :options="licenseStatuses"
-          v-model="filters.license_status"
         />
       </div>
       <div class="column is-3-desktop is-8-tablet is-12-mobile">
@@ -53,11 +53,11 @@
       </div>
     </div>
     <vue-table
+      :id="'nys-liquor'"
       class="box is-paddingless raises-on-hover is-rounded"
       :path="path"
       :filters="filters"
       :intervals="intervals"
-      :id="'nys-liquor'"
     >
       <span
         slot="type"
@@ -72,57 +72,57 @@
 </template>
 
 <script>
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
-import VueTable from "../../components/vuedatatable/VueTable.vue";
-import VueSelectFilter from "../../components/select/VueSelectFilter.vue";
-import DateIntervalFilter from "../../components/bulma/DateIntervalFilter.vue";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
+import VueTable from '../../components/vuedatatable/VueTable.vue';
+import VueSelectFilter from '../../components/select/VueSelectFilter.vue';
+import DateIntervalFilter from '../../components/bulma/DateIntervalFilter.vue';
 
 library.add(faEye);
 
 export default {
-  name: "NysLiquorDatatable",
+  name: 'NysLiquorDatatable',
 
   components: { DateIntervalFilter, VueSelectFilter, VueTable },
 
   data() {
     return {
-      path: "/template.json",
+      path: '/template.json',
       licenseStatus: [],
       licenseTypes: [],
       filters: {
         license_status: [],
         license_type: [],
-        county: []
+        county: [],
       },
       intervals: {
         filing_date: {
           min: null,
           max: null,
-          dbDateFormat: "Y-m-d"
+          dbDateFormat: 'Y-m-d',
         },
         effective_date: {
           min: null,
           max: null,
-          dbDateFormat: "Y-m-d"
+          dbDateFormat: 'Y-m-d',
         },
         expiration_date: {
           min: null,
           max: null,
-          dbDateFormat: "Y-m-d"
-        }
-      }
+          dbDateFormat: 'Y-m-d',
+        },
+      },
     };
   },
 
   created() {
     this.licenseStatuses = [
-      { name: "License is Active", id: "active" },
-      { name: "License is Inactive", id: "inactive" },
-      { name: "Expired", id: "expired" },
-      { name: "Pending", id: "pending" },
-      { name: "Operating Under Sapa", id: "operating_under_spa" }
+      { name: 'License is Active', id: 'active' },
+      { name: 'License is Inactive', id: 'inactive' },
+      { name: 'Expired', id: 'expired' },
+      { name: 'Pending', id: 'pending' },
+      { name: 'Operating Under Sapa', id: 'operating_under_spa' },
     ];
-  }
+  },
 };
 </script>

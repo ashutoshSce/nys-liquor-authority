@@ -16,5 +16,5 @@ import {
 
 library.add(faListAlt, faGithub, faUpload);
 
-Vue.component('fa', FontAwesomeIcon);
-Vue.component('fal', FontAwesomeLayers);
+Vue.component('Fa', FontAwesomeIcon);
+Vue.component('Fal', FontAwesomeLayers);

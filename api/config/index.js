@@ -9,7 +9,7 @@ const config = {
   app,
   database,
   logging,
-  pagination
+  pagination,
 };
 
 module.exports = config;

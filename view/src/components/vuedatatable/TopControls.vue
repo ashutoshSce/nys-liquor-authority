@@ -35,9 +35,9 @@
           </span>
         </button>
         <button
+          v-if="info"
           class="button"
           @click="$emit('request-full-info')"
-          v-if="info"
         >
           <span class="icon is-small has-text-info">
             <fa icon="info-circle" />
@@ -48,10 +48,10 @@
         class="column is-one-third-desktop is-half-tablet has-text-right-tablet has-text-centered-mobile has-padding-small table-buttons"
       >
         <button
-          class="button has-margin-left-small"
           v-for="button in template.buttons.global"
-          :class="button.class"
           :key="button.label"
+          class="button has-margin-left-small"
+          :class="button.class"
           :href="button.action === 'href' ? button.path : null"
           @click="button.confirmation ? showModal(button) : doAction(button)"
         >
@@ -66,22 +66,22 @@
       </div>
       <div class="column has-padding-small is-one-third-desktop search-input">
         <p
-          class="control has-icons-left has-icons-right"
           v-if="template.searchable"
+          class="control has-icons-left has-icons-right"
         >
           <input
             class="input has-text-centered is-rounded"
             type="text"
             :value="value"
-            @input="$emit('input', $event.target.value)"
             :placeholder="i18n('Search')"
+            @input="$emit('input', $event.target.value)"
           >
           <span class="icon is-small is-left">
             <fa icon="search" />
           </span>
           <span
-            class="icon is-small is-right clear-button"
             v-if="value && !loading"
+            class="icon is-small is-right clear-button"
             @click="$emit('input', '')"
           >
             <a class="delete is-small" />

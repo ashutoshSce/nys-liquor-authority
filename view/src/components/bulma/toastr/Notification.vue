@@ -8,6 +8,7 @@
     @after-leave="$destroy()"
   >
     <div
+      v-if="visible"
       :class="[
         'notification toastr animated',
         { 'highlight': hovering },
@@ -16,7 +17,6 @@
       @click="close"
       @mouseenter="startHovering"
       @mouseleave="stopHovering"
-      v-if="visible"
     >
       <div
         class="toastr-progress"
@@ -34,8 +34,8 @@
         <div class="media-content">
           <div class="content">
             <p
-              class="title is-5"
               v-if="title"
+              class="title is-5"
             >
               {{ i18n(title) }}
             </p>
@@ -69,7 +69,7 @@ export default {
     duration: {
       type: Number,
       default: 3500,
-      validator: val => val > 0,
+      validator: (val) => val > 0,
     },
     i18n: {
       type: Function,
@@ -86,7 +86,7 @@ export default {
     type: {
       type: String,
       required: true,
-      validator: val => Types.includes(val),
+      validator: (val) => Types.includes(val),
     },
   },
 
@@ -166,7 +166,7 @@ export default {
     mountWrapper() {
       return new Vue({
         name: 'ToastrWrapper',
-        render: h => h('div'),
+        render: (h) => h('div'),
       }).$mount();
     },
     startHovering() {

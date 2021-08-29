@@ -1,7 +1,7 @@
 <template>
   <modal
-    v-on="$listeners"
     :show="show"
+    v-on="$listeners"
   >
     <div class="box">
       <h5

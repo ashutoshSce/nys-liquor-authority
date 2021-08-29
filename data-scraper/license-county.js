@@ -1,4 +1,4 @@
-/* Command: node license-county.js 0*/
+/* Command: node license-county.js 0 */
 const fs = require('fs');
 require('dotenv').config({
   path: __dirname + '/.env'
@@ -16,22 +16,19 @@ let countyIndex = parseInt(process.argv[2]);
   const logger = new LoggerModule();
 
   process.on('unhandledRejection', (err) => {
-    console.log(require('util').format(err));
-    logger.sendMessageToSlack('Caught exceptionn: ' + err.toString()).then(() => {
-      spawn(process.env.NODE_PATH, [__dirname + '/license-county.js', countyIndex], {
-        detached: true
-      });
-      process.exit();
+    logger.sendMessageToSlack('Caught exceptionn: ' + err.toString());
+    spawn(process.env.NODE_PATH, [__dirname + '/license-county.js', countyIndex], {
+      detached: true
     });
+    process.exit();
   });
 
   const mongo = new MongoModule();
   await mongo.connectToDb();
   const definedObjects = await mongo.readObject('licenseMaster');
   if (definedObjects === null) {
-    logger.sendMessageToSlack('Forgot to run insert-into-master.js file. Plz run `node insert-into-master.js`').then(() => {
-      process.exit();
-    });
+    logger.sendMessageToSlack('Forgot to run insert-into-master.js file. Plz run `node insert-into-master.js`');
+    process.exit();
     return;
   }
   const countyList = Object.keys(definedObjects.county);
@@ -63,7 +60,7 @@ let countyIndex = parseInt(process.argv[2]);
       document.querySelector('form[name=AdvanceSearchResults] a:nth-child(2)').click();
     });
     
-    await page.waitFor(60000);
+    await page.waitForTimeout(60000);
 
     const textContent = await page.content();
 
@@ -101,10 +98,8 @@ let countyIndex = parseInt(process.argv[2]);
     }
 
     if (objectList.length === 0) {
-      logger.sendMessageToSlack('Index:' + countyIndex + ' Empty objectList found.').then(() => {
-        process.exit();
-      });
-      return;
+      logger.sendMessageToSlack('Index:' + countyIndex + ' Empty objectList found.');
+      process.exit();
     }
 
     const newLicenseList = Object.values(newLicenseType);
@@ -147,10 +142,9 @@ let countyIndex = parseInt(process.argv[2]);
 
   await browser.close();
   await mongo.disconnectToDb();
-  logger.sendMessageToSlack('Finished scraping countywise.').then(() => {
-    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
-      detached: true
-    });
-    process.exit();
+  logger.sendMessageToSlack('Finished scraping countywise.');
+  spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
+    detached: true
   });
+  process.exit();
 })();

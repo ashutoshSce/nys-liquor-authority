@@ -4,15 +4,22 @@
       <td v-if="template.crtNo" />
       <td v-if="template.selectable" />
       <td
-        class="has-text-centered is-bold"
         v-if="
           template.columns[0].meta.visible
             && !template.columns[0].meta.hidden
         "
+        class="has-text-centered is-bold"
       >
         {{ i18n("Total") }}
       </td>
       <td
+        v-for="i in visibleColumns.length - 1"
+        v-if="
+          visibleColumns[i].meta.visible
+            && !visibleColumns[i].meta.hidden
+            && !visibleColumns[i].meta.rogue
+        "
+        :key="i"
         :class="[
           'is-bold',
           { 'is-money' : visibleColumns[i].money },
@@ -20,13 +27,6 @@
             ? template.aligns[visibleColumns[i].align]
             : template.align
         ]"
-        v-for="i in visibleColumns.length - 1"
-        :key="i"
-        v-if="
-          visibleColumns[i].meta.visible
-            && !visibleColumns[i].meta.hidden
-            && !visibleColumns[i].meta.rogue
-        "
       >
         <span v-if="visibleColumns[i].meta.total">
           {{
@@ -36,8 +36,8 @@
           }}
         </span>
         <slot
-          :name="`${visibleColumns[i].name}_custom_total`"
           v-else-if="visibleColumns[i].meta.customTotal"
+          :name="`${visibleColumns[i].name}_custom_total`"
         >
           {{ `${visibleColumns[i].name}_custom_total` }}
         </slot>

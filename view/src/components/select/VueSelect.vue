@@ -1,7 +1,7 @@
 <template>
   <div
-    :class="['dropdown', { 'is-active': dropdown }]"
     v-click-outside="hideDropdown"
+    :class="['dropdown', { 'is-active': dropdown }]"
   >
     <div class="dropdown-trigger">
       <fieldset
@@ -16,28 +16,28 @@
         <div class="select-value">
           <div class="field is-grouped is-grouped-multiline">
             <div
-              class="control"
               v-if="multiple"
+              class="control"
             >
               <tag
                 v-for="(option, index) in selected"
+                :key="index"
                 :disabled="readonly || disabled"
                 :label="optionLabel(option, label)"
-                :key="index"
                 @remove="remove(option); $emit('remove', option)"
               />
             </div>
             <input
+              v-if="dropdown"
+              v-model="query"
               class="input select-input"
               type="text"
               :placeholder="i18n(placeholder)"
-              v-model="query"
               @keydown.esc="hideDropdown"
               @keydown.down="keyDown"
               @keydown.up="keyUp"
               @keydown.tab="hideDropdown"
               @keydown.enter.prevent="hit()"
-              v-if="dropdown"
             >
           </div>
           <span v-if="!dropdown && !(multiple && hasSelection)">
@@ -47,12 +47,12 @@
             }}
           </span>
           <span
-            class="is-loading"
             v-if="loading"
+            class="is-loading"
           />
           <a
-            class="delete is-small"
             v-if="!disableClear && !loading && hasSelection && !readonly && !disabled"
+            class="delete is-small"
             @mousedown.prevent.self="clear"
           />
           <span
@@ -67,19 +67,19 @@
     <div class="dropdown-menu">
       <div class="dropdown-content">
         <a
-          class="dropdown-item"
           v-for="(option, index) in filteredOptions"
           :key="index"
+          class="dropdown-item"
           :class="{ 'is-active': position === index }"
           @mousemove="position = index"
           @click.prevent="hit()"
         >
           <span v-html="highlight(optionLabel(option, label))" />
           <span
+            v-if="index === position && !disableClear"
             :class="[
               'label tag', isSelected(option) ? 'is-warning' : 'is-success'
             ]"
-            v-if="index === position && !disableClear"
           >
             <span v-if="isSelected(option)">
               {{ i18n(labels.deselect) }}
@@ -89,21 +89,21 @@
             </span>
           </span>
           <span
-            class="icon is-small selected has-text-success"
             v-else-if="isSelected(option)"
+            class="icon is-small selected has-text-success"
           >
             <fa icon="check" />
           </span>
         </a>
         <a
-          class="dropdown-item"
           v-if="filteredOptions.length === 0"
+          class="dropdown-item"
           @click="taggable ? $emit('add-tag', query) : null"
         >
           {{ i18n(labels.noResults) }}
           <span
-            class="label tag is-info"
             v-if="taggable"
+            class="label tag is-info"
           >
             {{ i18n(labels.addTag) }}
           </span>
@@ -244,7 +244,7 @@ export default {
     filteredOptions() {
       return this.query
         ? this.optionList.filter(
-          option => this.optionLabel(option, this.label)
+          (option) => this.optionLabel(option, this.label)
             .toLowerCase()
             .indexOf(this.query.toLowerCase()) >= 0,
         )
@@ -263,13 +263,13 @@ export default {
 
       if (!this.multiple) {
         const option = this.optionList.find(
-          option => option[this.trackBy] === this.value,
+          (option) => option[this.trackBy] === this.value,
         );
 
         return this.optionLabel(option, this.label);
       }
 
-      return this.optionList.filter(option => this.value.includes(option[this.trackBy]));
+      return this.optionList.filter((option) => this.value.includes(option[this.trackBy]));
     },
   },
 
@@ -333,7 +333,7 @@ export default {
           this.$emit('fetch', this.optionList);
           this.loading = false;
         })
-        .catch(error => this.handleError(error));
+        .catch((error) => this.handleError(error));
     },
     getParams() {
       return {
@@ -355,14 +355,14 @@ export default {
     valueIsMatched() {
       if (!this.multiple) {
         return (
-          this.optionList.filter(option => option[this.trackBy] === this.value)
+          this.optionList.filter((option) => option[this.trackBy] === this.value)
             .length > 0
         );
       }
 
       return (
         this.optionList.filter(
-          option => this.value.filter(val => val === option[this.trackBy]).length > 0,
+          (option) => this.value.filter((val) => val === option[this.trackBy]).length > 0,
         ).length > 0
       );
     },
@@ -399,7 +399,7 @@ export default {
       }
 
       const newValue = this.value;
-      const index = newValue.findIndex(option => option === value);
+      const index = newValue.findIndex((option) => option === value);
 
       if (index >= 0) {
         newValue.splice(index, 1);
@@ -418,12 +418,12 @@ export default {
       return label.replace(new RegExp(`(${this.query})`, 'gi'), '<b>$1</b>');
     },
     remove(option) {
-      const index = this.value.findIndex(val => val === option[this.trackBy]);
+      const index = this.value.findIndex((val) => val === option[this.trackBy]);
       this.value.splice(index, 1);
     },
     isSelected(option) {
       return this.multiple
-        ? this.value.findIndex(item => item === option[this.trackBy]) >= 0
+        ? this.value.findIndex((item) => item === option[this.trackBy]) >= 0
         : this.value !== null && this.value === option[this.trackBy];
     },
     keyDown() {

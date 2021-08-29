@@ -14,28 +14,28 @@
     >
     <span class="icon is-small is-left">
       <fa
-        icon="clock"
         v-if="timeOnly"
+        icon="clock"
       />
       <fa
-        icon="calendar-alt"
         v-else
+        icon="calendar-alt"
       />
     </span>
     <span
+      v-if="value && !disabled && !isDanger && !isWarning"
       class="icon is-small is-right clear-button"
       @click="picker.clear()"
-      v-if="value && !disabled && !isDanger && !isWarning"
     >
       <a class="delete is-small" />
     </span>
     <span
+      v-if="isDanger || isWarning"
       :class="[
         'icon is-small is-right',
         { 'has-text-danger': isDanger },
         { 'has-text-warning': isWarning }
       ]"
-      v-if="isDanger || isWarning"
     >
       <fa icon="exclamation-triangle" />
     </span>
@@ -102,7 +102,7 @@ export default {
     locale: {
       type: String,
       default: 'en',
-      validator: val => Object.keys(i18n).includes(val),
+      validator: (val) => Object.keys(i18n).includes(val),
     },
     isDanger: {
       type: Boolean,
