@@ -39,9 +39,16 @@ module.exports = class Mongo {
     });
   }
 
-  readObjectByJoin(collectionName, skip, limit) {
+  readObjectByJoin(collectionName, skip, limit, dir=1) {
     return new Promise((resolve, reject) => {
-      this.db.collection(collectionName).aggregate([{
+      const params = [
+        {
+          "$sort": 
+          {
+            "county": dir
+          }
+        },
+        {
           "$lookup": {
             "from": "licenseInfo",
             "localField": "serial_number",
@@ -56,7 +63,8 @@ module.exports = class Mongo {
             }
           }
         }
-      ]).skip(skip).limit(limit).toArray(function (err, result) {
+      ];
+      this.db.collection(collectionName).aggregate(params).skip(skip).limit(limit).toArray(function (err, result) {
         if (err) throw err;
         resolve(result);
       });

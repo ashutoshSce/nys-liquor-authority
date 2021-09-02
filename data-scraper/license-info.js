@@ -12,6 +12,7 @@ const MongoModule = require('./mongo');
 const LoggerModule = require('./logger');
 
 const limit = 1000;
+let countyDir = parseInt(process.argv[2]) || 1;
 
 function swap(json) {
   var ret = {};
@@ -126,7 +127,7 @@ async function parseItems(logger, items, definedObjects, index) {
 
   process.on('unhandledRejection', (err) => {
     logger.sendMessageToSlack('Caught exception: ' + err.toString());
-    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
+    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js', countyDir], {
       detached: true
     });
     process.exit();
@@ -144,7 +145,7 @@ async function parseItems(logger, items, definedObjects, index) {
 
   definedObjects.license_type = swap(definedObjects.license_type);
   definedObjects.county = swap(definedObjects.county);
-  const licensePageList = await mongo.readObjectByJoin('licensePage', 0, limit);
+  const licensePageList = await mongo.readObjectByJoin('licensePage', 0, limit, countyDir);
 
   const browser = await puppeteer.launch({
     headless: true,
@@ -250,7 +251,7 @@ async function parseItems(logger, items, definedObjects, index) {
     logger.sendMessageToSlack('Finished Scraping, zero record found.');
   } else {
     logger.sendMessageToSlack('Finished Scraping, reached to limit ' + limit);
-    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
+    spawn(process.env.NODE_PATH, [__dirname + '/license-info.js', countyDir], {
       detached: true
     });
     process.exit();

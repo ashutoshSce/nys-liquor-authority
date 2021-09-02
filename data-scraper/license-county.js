@@ -152,7 +152,7 @@ let countyIndex = parseInt(process.argv[2]);
   await browser.close();
   await mongo.disconnectToDb();
   logger.sendMessageToSlack('Finished scraping countywise.');
-  spawn(process.env.NODE_PATH, [__dirname + '/license-info.js'], {
+  spawn(process.env.NODE_PATH, [__dirname + '/license-info.js', 1], {
     detached: true
   });
   process.exit();
